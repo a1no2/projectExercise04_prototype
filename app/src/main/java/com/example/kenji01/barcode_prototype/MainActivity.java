@@ -1,48 +1,74 @@
 package com.example.kenji01.barcode_prototype;
 
 import android.content.Intent;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.EditText;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
 
-public class MainActivity extends AppCompatActivity {
+import java.util.ArrayDeque;
+import java.util.ArrayList;
 
+public class MainActivity extends AppCompatActivity {
     private String janCode;
     private TextView resultText;
-    private EditText keyword_editText;
 
+    //DBを使う準備
+    private SQLiteDatabase db;
+    private DB_helper helper;
+
+    //リストビューの準備
+    private ArrayList<String> arr;
+    private ArrayAdapter<String> adapter;
+    private ListView list;
+
+    //データベースの参照位置を保持
+    private Cursor c;
+
+
+    //activityがスタートしたら実行
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
         resultText = (TextView)findViewById(R.id.result_text);
-        keyword_editText = (EditText)findViewById(R.id.keyword_editText);
+        list = (ListView)findViewById(R.id.list);
+
+        //インスタンス生成して読み書き可能で取得
+        helper = new DB_helper(getApplicationContext());
+        db = helper.getWritableDatabase();
+
+        //ListViewにItemをセット
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1);
+        adapter.add("いち");
+        adapter.add("に");
+        adapter.add("さん");
+        list.setAdapter(adapter);
+
+        //ListView クリックイベント
+        list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Toast.makeText(getApplicationContext(), position + "番目のアイテムがクリックされました", Toast.LENGTH_LONG).show();
+            }
+        });
     }
 
-
+    //バーコード
     public void scanBarcode(View v) {
         new IntentIntegrator(this).setBeepEnabled(false).initiateScan();
     }
-
-
-    public void search(View v){
-        String keyword = keyword_editText.getText().toString();
-        if (keyword.equals("")){
-            Toast.makeText(this, "検索ワードが空だよ！！", Toast.LENGTH_LONG).show();
-        } else {
-            Toast.makeText(this, keyword, Toast.LENGTH_LONG).show();
-        }
-    }
-
-
-
+    //バーコード読み取ったのを受け取る
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         IntentResult result = IntentIntegrator.parseActivityResult(requestCode, resultCode, data);
@@ -58,4 +84,14 @@ public class MainActivity extends AppCompatActivity {
             super.onActivityResult(requestCode, resultCode, data);
         }
     }
+
+
+    public void RegistrationIntent(View v){
+        Intent i = new Intent(MainActivity.this, RegistrationActivity.class);
+        startActivity(i);
+    }
+
+
+
+
 }
