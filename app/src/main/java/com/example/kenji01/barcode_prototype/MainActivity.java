@@ -50,11 +50,9 @@ public class MainActivity extends AppCompatActivity {
         db = helper.getWritableDatabase();
 
         //ListViewにItemをセット
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1);
-        adapter.add("いち");
-        adapter.add("に");
-        adapter.add("さん");
-        list.setAdapter(adapter);
+//        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1);
+//        list.setAdapter(adapter);
+        setAdapter();
 
         //ListView クリックイベント
         list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -62,6 +60,9 @@ public class MainActivity extends AppCompatActivity {
                 Toast.makeText(getApplicationContext(), position + "番目のアイテムがクリックされました", Toast.LENGTH_LONG).show();
             }
         });
+
+
+
     }
 
     //バーコード
@@ -92,6 +93,31 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
+    public void onResume(){
+        super.onResume();
+        setAdapter();
+    }
+    public void setAdapter(){
+        arr = new ArrayList<>();
+        c = db.query(
+          DB_helper.TABLE_NAME,
+          new String[]{DB_helper.BOOK_NAME,DB_helper.BOOK_ID},
+          null,null,null,null,null
+        );
+
+        while (c.moveToNext()){
+            arr.add(c.getString(c.getColumnIndexOrThrow(DB_helper.BOOK_NAME)));
+            Toast.makeText(getApplicationContext(),c.getString(c.getColumnIndexOrThrow(DB_helper.BOOK_NAME)), Toast.LENGTH_LONG).show();
+        }
+
+        adapter = new ArrayAdapter<String>(
+                getApplicationContext(),
+                android.R.layout.simple_dropdown_item_1line,
+                arr
+        );
+
+        list.setAdapter(adapter);
+    }
 
 
 }

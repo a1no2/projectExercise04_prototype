@@ -56,38 +56,35 @@
                 android:layout_marginBottom="8dp" />
 
             <RadioGroup
+                android:id="@+id/radioGroup"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="8dp">
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal">
-                    <RadioButton
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="0.5"
-                        android:text="欲しいものリスト" />
 
                     <RadioButton
-                        android:layout_width="0dp"
+                        android:id="@+id/went_radio"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_weight="0.5"
+                        android:text="欲しいものリスト" />
+                    <RadioButton
+                        android:id="@+id/have_radio"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
                         android:text="所持リスト" />
-                </LinearLayout>
             </RadioGroup>
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="PRICE"
+                android:text="金額"
                 android:textSize="24dp" />
 
             <EditText
                 android:id="@+id/price_editText"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint=""
+                android:inputType="number"
+                android:hint="1500"
                 android:layout_marginBottom="8dp" />
 
             <TextView
@@ -100,7 +97,8 @@
                 android:id="@+id/purchaseDate_editText"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="" />
+                android:inputType="number"
+                android:hint="20170101" />
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -117,7 +115,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"/>
                 <Button
-                    android:id="@+id/Registration_btn"
+                    android:id="@+id/registration_btn"
                     android:text="登録"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"/>

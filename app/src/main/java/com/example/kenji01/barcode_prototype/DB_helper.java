@@ -11,17 +11,17 @@ import android.database.sqlite.SQLiteOpenHelper;
 public class DB_helper extends SQLiteOpenHelper{
     //DBの名前　テーブル名　バージョン
     private static final String DB_NAME = "client_DB";
-    private static final String TABLE_NAME = "book_table";
+    public static final String TABLE_NAME = "book_table";
     private static final int DB_VERSION = 1;
 
     //カラム
-    private static String BOOK_ID = "book_id";
-    private static String BOOK_NAME = "book_name";
-    private static String AUTHOR = "author";
-    private static String CODE = "code";
-    private static String HAVE = "have";
-    private static String PRICE = "price";
-    private static String PURCHASE_DATE = "purchase_date";
+    public static String BOOK_ID = "book_id";
+    public static String BOOK_NAME = "book_name";
+    public static String AUTHOR = "author";
+    public static String CODE = "code";
+    public static String HAVE = "have";
+    public static String PRICE = "price";
+    public static String PURCHASE_DATE = "purchase_date";
 
 
 
@@ -41,7 +41,7 @@ public class DB_helper extends SQLiteOpenHelper{
                 + CODE              +" text, "
                 + HAVE              +" integer, "
                 + PRICE             +" integer, "
-                + PURCHASE_DATE     +" numeric"
+                + PURCHASE_DATE     +" integer"
         + ");");
 
     }
