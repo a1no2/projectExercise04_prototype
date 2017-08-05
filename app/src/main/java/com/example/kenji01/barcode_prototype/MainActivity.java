@@ -19,6 +19,8 @@ import com.google.zxing.integration.android.IntentResult;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 
+import static com.loopj.android.http.AsyncHttpClient.log;
+
 public class MainActivity extends AppCompatActivity {
     private String janCode;
     private TextView resultText;
@@ -107,7 +109,8 @@ public class MainActivity extends AppCompatActivity {
 
         while (c.moveToNext()){
             arr.add(c.getString(c.getColumnIndexOrThrow(DB_helper.BOOK_NAME)));
-            Toast.makeText(getApplicationContext(),c.getString(c.getColumnIndexOrThrow(DB_helper.BOOK_NAME)), Toast.LENGTH_LONG).show();
+            log.d("DB",String.valueOf(c.getColumnIndexOrThrow(DB_helper.BOOK_NAME)));
+
         }
 
         adapter = new ArrayAdapter<String>(
