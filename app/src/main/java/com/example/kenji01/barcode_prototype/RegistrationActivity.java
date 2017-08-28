@@ -2,11 +2,14 @@ package com.example.kenji01.barcode_prototype;
 
 import android.content.ContentValues;
 import android.content.DialogInterface;
+import android.content.Intent;
+import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -14,9 +17,12 @@ import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.Toast;
 
+import java.lang.reflect.Array;
+import java.util.ArrayList;
+
 public class RegistrationActivity extends AppCompatActivity implements View.OnClickListener{
     //DB
-    private SQLiteDatabase mydb;
+    private SQLiteDatabase db;
     private DB_helper db_helper;
 
 
@@ -25,6 +31,7 @@ public class RegistrationActivity extends AppCompatActivity implements View.OnCl
     EditText bookName_editText,author_editText,
             code_editText,price_editText,purchaseDate_editText;
     RadioGroup radioGroup;
+    RadioButton have_radio,went_radio;
 
 
     @Override
@@ -32,6 +39,8 @@ public class RegistrationActivity extends AppCompatActivity implements View.OnCl
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_registration);
 
+        Intent i = getIntent();
+        String id_ = i.getStringExtra("ID");
 
         //ボタン、テキストフィールド、ラジオボタンの紐づけ
         clear_btn = (Button)findViewById(R.id.clear_btn);
@@ -46,11 +55,55 @@ public class RegistrationActivity extends AppCompatActivity implements View.OnCl
         purchaseDate_editText = (EditText)findViewById(R.id.purchaseDate_editText);
 
         radioGroup = (RadioGroup)findViewById(R.id.radioGroup);
+        have_radio = (RadioButton)findViewById(R.id.have_radio);
+        went_radio = (RadioButton)findViewById(R.id.went_radio);
+
 
         //DB準備
-//        helper = new DB_helper(getApplicationContext());
-//        mydb = helper.getWritableDatabase();        //読み書き
+        db_helper = new DB_helper(getApplicationContext());
+        db = db_helper.getWritableDatabase();        //読み書き
 
+
+        if (id_.equals("create")){
+
+        } else {
+//            Curs            String SQL_str =
+//                    "select * " +
+//                    "from " + db_helper.TABLE_NAME +
+//                    " where " + db_helper.BOOK_ID + " = ?;";
+//            Log.d("SQL:", SQL_str);or c = db.rawQuery(SQL_str, new String[]{id_});
+
+            Cursor cursor = db.query(
+                    DB_helper.TABLE_NAME,
+                    new String []{DB_helper.BOOK_NAME, DB_helper.AUTHOR, DB_helper.CODE,
+                            String.valueOf(DB_helper.HAVE), String.valueOf(DB_helper.PRICE),
+                            String.valueOf(DB_helper.PURCHASE_DATE)},
+                    DB_helper.BOOK_ID + " = ?",
+                    new String[] {""+String.valueOf(id_)},
+                    null,
+                    null,
+                    null,
+                    null
+            );
+            while (cursor.moveToNext()){
+                bookName_editText.setText(cursor.getString(cursor.getColumnIndexOrThrow(DB_helper.BOOK_NAME)));
+                author_editText.setText(cursor.getString(cursor.getColumnIndexOrThrow(DB_helper.AUTHOR)));
+                code_editText.setText(cursor.getString(cursor.getColumnIndexOrThrow(DB_helper.CODE)));
+                price_editText.setText(cursor.getString(cursor.getColumnIndexOrThrow(DB_helper.PRICE)));
+                purchaseDate_editText.setText(cursor.getString(cursor.getColumnIndexOrThrow(DB_helper.PURCHASE_DATE)));
+
+
+                String have = cursor.getString(cursor.getColumnIndexOrThrow(DB_helper.HAVE));
+
+                Toast.makeText(this, have, Toast.LENGTH_LONG).show();
+                if (have.equals("1" )){
+                    have_radio.setChecked(true);
+                } else {
+                    went_radio.setChecked(true);
+                }
+
+            }
+        }
 
 
     }
@@ -91,24 +144,28 @@ public class RegistrationActivity extends AppCompatActivity implements View.OnCl
             //登録ボタン
             case R.id.registration_btn:
                 if (bookName_editText.getText().toString().equals("")) {
+
+
+                    Toast.makeText(this, radioGroup.getCheckedRadioButtonId()+"", Toast.LENGTH_SHORT).show();
                     Toast.makeText(this, "書籍名が空白です", Toast.LENGTH_SHORT).show();
                     break;
                 } else if (radioGroup.getCheckedRadioButtonId() == -1){
                     Toast.makeText(this, "欲しいものリストか所持リストを選択してください", Toast.LENGTH_SHORT).show();
                 } else {
                     db_helper = new DB_helper(getApplicationContext());
-                    mydb = db_helper.getWritableDatabase();
+                    db = db_helper.getWritableDatabase();
 
                     //押されたラジオボタンのIDを取得しオブジェクト取得
                     int radioButton_id = radioGroup.getCheckedRadioButtonId();
-                    //所持リストのラジオボタンIDだったら
-                    if (radioButton_id == 2131492978){
+                    //所持していたら1 欲しいものリスト0
+                    if (radioButton_id == 2131492977){
                         radioButton_id = 1;
-                    } else {
-                        radioButton_id = -1;
+                    } else if (radioButton_id == 2131492978) {
+                        radioButton_id = 0;
                     }
 
 
+                    Toast.makeText(this, radioButton_id+"", Toast.LENGTH_SHORT).show();
                     String SQL_str = "insert into "
                             + db_helper.TABLE_NAME + " ( "
                                 + db_helper.BOOK_NAME + "," + db_helper.AUTHOR + "," + db_helper.CODE + ","
@@ -123,7 +180,7 @@ public class RegistrationActivity extends AppCompatActivity implements View.OnCl
                                 + " );";
 
                     try{
-                        mydb.execSQL(SQL_str);
+                        db.execSQL(SQL_str);
                     }catch (SQLException e) {
                         Toast.makeText(this, "SQLexecSQL\n" + e, Toast.LENGTH_LONG).show();
                         break;

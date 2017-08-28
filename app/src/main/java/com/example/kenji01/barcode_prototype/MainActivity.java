@@ -30,7 +30,8 @@ public class MainActivity extends AppCompatActivity {
     private DB_helper helper;
 
     //リストビューの準備
-    private ArrayList<String> arr;
+    private ArrayList<String> title_arr;
+    private ArrayList<String> id_arr;
     private ArrayAdapter<String> adapter;
     private ListView list;
 
@@ -59,7 +60,12 @@ public class MainActivity extends AppCompatActivity {
         //ListView クリックイベント
         list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Toast.makeText(getApplicationContext(), position + "番目のアイテムがクリックされました", Toast.LENGTH_LONG).show();
+//                Toast.makeText(getApplicationContext(), position + "番目のアイテムがクリックされました", Toast.LENGTH_LONG).show();
+                Toast.makeText(getApplicationContext(), id_arr.get(position) + ":" + title_arr.get(position), Toast.LENGTH_SHORT).show();
+                Intent i = new Intent(MainActivity.this, RegistrationActivity.class);
+                i.putExtra("ID",id_arr.get(position));
+                startActivity(i);
+
             }
         });
 
@@ -91,6 +97,7 @@ public class MainActivity extends AppCompatActivity {
 
     public void RegistrationIntent(View v){
         Intent i = new Intent(MainActivity.this, RegistrationActivity.class);
+        i.putExtra("ID","create");
         startActivity(i);
     }
 
@@ -100,7 +107,9 @@ public class MainActivity extends AppCompatActivity {
         setAdapter();
     }
     public void setAdapter(){
-        arr = new ArrayList<>();
+        title_arr = new ArrayList<>();
+        id_arr = new ArrayList<>();
+
         c = db.query(
           DB_helper.TABLE_NAME,
           new String[]{DB_helper.BOOK_NAME,DB_helper.BOOK_ID},
@@ -108,15 +117,15 @@ public class MainActivity extends AppCompatActivity {
         );
 
         while (c.moveToNext()){
-            arr.add(c.getString(c.getColumnIndexOrThrow(DB_helper.BOOK_NAME)));
-            log.d("DB",String.valueOf(c.getColumnIndexOrThrow(DB_helper.BOOK_NAME)));
+            title_arr.add(c.getString(c.getColumnIndexOrThrow(DB_helper.BOOK_NAME)));
+            id_arr.add(c.getString(c.getColumnIndexOrThrow(DB_helper.BOOK_ID)));
 
         }
 
         adapter = new ArrayAdapter<String>(
                 getApplicationContext(),
                 android.R.layout.simple_dropdown_item_1line,
-                arr
+                title_arr
         );
 
         list.setAdapter(adapter);
