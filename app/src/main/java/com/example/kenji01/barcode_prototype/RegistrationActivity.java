@@ -17,6 +17,7 @@ import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.Toast;
 
+import java.io.FileNotFoundException;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 
@@ -33,6 +34,8 @@ public class RegistrationActivity extends AppCompatActivity implements View.OnCl
     RadioGroup radioGroup;
     RadioButton have_radio,went_radio;
 
+    //新しく登録するならcreate　更新なら,そのIDが入る
+    String id_;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,7 +43,7 @@ public class RegistrationActivity extends AppCompatActivity implements View.OnCl
         setContentView(R.layout.activity_registration);
 
         Intent i = getIntent();
-        String id_ = i.getStringExtra("ID");
+        id_ = i.getStringExtra("ID");
 
         //ボタン、テキストフィールド、ラジオボタンの紐づけ
         clear_btn = (Button)findViewById(R.id.clear_btn);
@@ -144,14 +147,14 @@ public class RegistrationActivity extends AppCompatActivity implements View.OnCl
             //登録ボタン
             case R.id.registration_btn:
                 if (bookName_editText.getText().toString().equals("")) {
-
-
                     Toast.makeText(this, radioGroup.getCheckedRadioButtonId()+"", Toast.LENGTH_SHORT).show();
                     Toast.makeText(this, "書籍名が空白です", Toast.LENGTH_SHORT).show();
                     break;
                 } else if (radioGroup.getCheckedRadioButtonId() == -1){
                     Toast.makeText(this, "欲しいものリストか所持リストを選択してください", Toast.LENGTH_SHORT).show();
-                } else {
+
+                //新規登録
+                } else if (id_.equals("create")){
                     db_helper = new DB_helper(getApplicationContext());
                     db = db_helper.getWritableDatabase();
 
@@ -159,13 +162,12 @@ public class RegistrationActivity extends AppCompatActivity implements View.OnCl
                     int radioButton_id = radioGroup.getCheckedRadioButtonId();
                     //所持していたら1 欲しいものリスト0
                     if (radioButton_id == 2131492977){
-                        radioButton_id = 1;
-                    } else if (radioButton_id == 2131492978) {
                         radioButton_id = 0;
+                    } else if (radioButton_id == 2131492978) {
+                        radioButton_id = 1;
                     }
 
 
-                    Toast.makeText(this, radioButton_id+"", Toast.LENGTH_SHORT).show();
                     String SQL_str = "insert into "
                             + db_helper.TABLE_NAME + " ( "
                                 + db_helper.BOOK_NAME + "," + db_helper.AUTHOR + "," + db_helper.CODE + ","
@@ -185,6 +187,34 @@ public class RegistrationActivity extends AppCompatActivity implements View.OnCl
                         Toast.makeText(this, "SQLexecSQL\n" + e, Toast.LENGTH_LONG).show();
                         break;
                     }
+                    Toast.makeText(this, "登録完了しました！", Toast.LENGTH_SHORT).show();
+                    this.finish();
+
+                //更新
+                } else {
+
+                    int radioButton_id = radioGroup.getCheckedRadioButtonId();
+                    //所持していたら1 欲しいものリスト0
+                    if (radioButton_id == 2131492977){
+                        radioButton_id = 0;
+                    } else if (radioButton_id == 2131492978) {
+                        radioButton_id = 1;
+                    }
+                    ContentValues valuse = new ContentValues();
+                    valuse.put(db_helper.BOOK_NAME, bookName_editText.getText().toString());
+                    valuse.put(db_helper.AUTHOR, author_editText.getText().toString());
+                    valuse.put(db_helper.CODE, code_editText.getText().toString());
+                    valuse.put(db_helper.HAVE, radioButton_id);
+                    valuse.put(db_helper.PRICE, price_editText.getText().toString());
+                    valuse.put(db_helper.PURCHASE_DATE, purchaseDate_editText.getText().toString());
+
+                    String where = db_helper.BOOK_ID + " = " + id_;
+                    db.update(
+                            db_helper.TABLE_NAME,
+                            valuse,
+                            where,
+                            null
+                    );
                     Toast.makeText(this, "登録完了しました！", Toast.LENGTH_SHORT).show();
                     this.finish();
 
