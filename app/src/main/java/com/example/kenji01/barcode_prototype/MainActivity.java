@@ -1,8 +1,10 @@
 package com.example.kenji01.barcode_prototype;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -27,7 +29,7 @@ public class MainActivity extends AppCompatActivity {
 
     //DBを使う準備
     private SQLiteDatabase db;
-    private DB_helper helper;
+    private DB_helper db_helper;
 
     //リストビューの準備
     private ArrayList<String> title_arr;
@@ -38,6 +40,8 @@ public class MainActivity extends AppCompatActivity {
     //データベースの参照位置を保持
     private Cursor c;
 
+    //くそこーど 削除
+    public static int remove_id;
 
     //activityがスタートしたら実行
     @Override
@@ -49,8 +53,8 @@ public class MainActivity extends AppCompatActivity {
         list = (ListView)findViewById(R.id.list);
 
         //インスタンス生成して読み書き可能で取得
-        helper = new DB_helper(getApplicationContext());
-        db = helper.getWritableDatabase();
+        db_helper = new DB_helper(getApplicationContext());
+        db = db_helper.getWritableDatabase();
 
         //ListViewにItemをセット
 //        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1);
@@ -69,6 +73,51 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+
+        //削除 アイテムのロングクリック
+        list.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(AdapterView parent, View view, int position, long id) {
+                c.moveToPosition(position);
+                AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+                builder.setTitle("項目の削除");
+                builder.setMessage("この項目を削除してよろしいですか？");
+//                builder.setCancelable(false);
+                remove_id = position;
+
+                // アラートダイアログの肯定ボタンがクリックされた時に呼び出されるコールバックリスナーを登録します
+                builder.setPositiveButton("OK",new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                db.delete(
+                                        db_helper.TABLE_NAME,
+                                        db_helper.BOOK_ID + " = ?",
+                                        new String[] {id_arr.get(remove_id)}
+//                              m          new String[] {c.getString(c.getColumnIndex(db_helper.BOOK_ID))}
+                                );
+                                setAdapter();
+
+                                Toast.makeText(getApplicationContext(), "ok", Toast.LENGTH_SHORT).show();
+
+                            }
+                        });
+                // アラートダイアログの否定ボタンがクリックされた時に呼び出されるコールバックリスナーを登録します
+                builder.setNegativeButton("NO",
+                        new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                Toast.makeText(getApplicationContext(), "no", Toast.LENGTH_SHORT).show();
+                            }
+                        });
+
+                builder.setCancelable(true);
+                AlertDialog alertDialog = builder.create();
+                alertDialog.show();
+
+
+                return true;
+            }
+        });
 
 
     }
@@ -106,6 +155,8 @@ public class MainActivity extends AppCompatActivity {
         super.onResume();
         setAdapter();
     }
+
+    //リストの更新
     public void setAdapter(){
         title_arr = new ArrayList<>();
         id_arr = new ArrayList<>();
@@ -115,21 +166,19 @@ public class MainActivity extends AppCompatActivity {
           new String[]{DB_helper.BOOK_NAME,DB_helper.BOOK_ID},
           null,null,null,null,null
         );
-
         while (c.moveToNext()){
             title_arr.add(c.getString(c.getColumnIndexOrThrow(DB_helper.BOOK_NAME)));
             id_arr.add(c.getString(c.getColumnIndexOrThrow(DB_helper.BOOK_ID)));
 
         }
-
         adapter = new ArrayAdapter<String>(
                 getApplicationContext(),
                 android.R.layout.simple_dropdown_item_1line,
                 title_arr
         );
-
         list.setAdapter(adapter);
     }
+
 
 
 }
