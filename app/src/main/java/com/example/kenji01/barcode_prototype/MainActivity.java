@@ -7,6 +7,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.Menu;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -57,8 +58,6 @@ public class MainActivity extends AppCompatActivity {
         db = db_helper.getWritableDatabase();
 
         //ListViewにItemをセット
-//        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1);
-//        list.setAdapter(adapter);
         setAdapter();
 
         //ListView クリックイベント
@@ -164,7 +163,7 @@ public class MainActivity extends AppCompatActivity {
         c = db.query(
           DB_helper.TABLE_NAME,
           new String[]{DB_helper.BOOK_NAME,DB_helper.BOOK_ID},
-          null,null,null,null,null
+          null,null,null,null,DB_helper.BOOK_NAME + ""
         );
         while (c.moveToNext()){
             title_arr.add(c.getString(c.getColumnIndexOrThrow(DB_helper.BOOK_NAME)));
@@ -180,5 +179,15 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
+//    //メニューバー
+//    @Override
+//    public boolean onCreateOptionsMenu(Menu menu){
+//        getMenuInflater().inflate(R.menu.menu, menu);
+//        return true;
+//    }
+
+    public void tst(View v) {
+        Toast.makeText(this, "未実装", Toast.LENGTH_SHORT).show();
+    }
 
 }

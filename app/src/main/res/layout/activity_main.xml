@@ -5,6 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
+    android:weightSum="9"
     tools:context="com.example.kenji01.barcode_prototype.MainActivity">
 
     <!--<android.support.v7.widget.Toolbar-->
@@ -15,42 +16,59 @@
 
     <TextView
         android:id="@+id/result_text"
-        android:text="ここに読み取り結果"
+        android:text="ここに読み取り結果(仮)"
         android:gravity="center"
-        android:textSize="24sp"
-        android:layout_marginBottom="16dp"
+        android:textSize="16sp"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="0dp"
+        android:layout_weight="1" />
 
-    <Button
-        android:id="@+id/scan_button"
-        android:text="バーコード読み取り"
-        android:onClick="scanBarcode"
-        android:layout_marginBottom="16dp"
+
+
+    <ListView
+        android:id="@+id/list"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
+        android:layout_height="0dp"
+        android:layout_weight="7"></ListView>
+
+
+
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical">
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:weightSum="4"
+        android:background="#d5d5d5"
+        android:orientation="horizontal">
 
-        <ListView
-            android:id="@+id/list"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="0.9">
-        </ListView>
+        <ImageButton
+            android:src="@android:drawable/btn_star"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:onClick="tst" />
 
-        <Button
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="0.1"
+        <ImageButton
+            android:src="@android:drawable/ic_delete"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:onClick="tst" />
+
+        <ImageButton
+            android:src="@android:drawable/ic_menu_add"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
             android:onClick="RegistrationIntent" />
+
+        <ImageButton
+            android:src="@android:drawable/ic_menu_camera"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:onClick="scanBarcode" />
     </LinearLayout>
-
-
-
-
 
 </LinearLayout>
